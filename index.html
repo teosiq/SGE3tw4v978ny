@@ -101,6 +101,39 @@
             border-bottom-color: #000; /* Линия подчеркивания при наведении */
             cursor: pointer;
         }
+
+        /* Медиа-запросы для адаптивности QR-кода */
+        @media (max-width: 767px) {
+            .ticket__qrcode img,
+            .ticket__qrcode canvas {
+                height: 240px !important;
+                width: 240px !important;
+            }
+        }
+        /* Стили для toast-уведомления */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-size: 17px;
+            transition: opacity 0.5s, bottom 0.5s;
+            opacity: 0;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
     </style>
     <link rel="stylesheet" href="./style.css" media="all">
 </head>
@@ -148,17 +181,10 @@
                                 <div class="ticket__qrcode">
                                     <img src="./qrcode.png" alt="QR-код билета" style="height: 1880px; width: 1880px;" aria-label="url" title="Билет">
                                 </div>
-                                <div class="ticket__qrcode">
-                                    <qrcode errorcorrectionlevel="L" arialabel="url" colorlight="#F5F1E8" elementtype="canvas" title="Билет">
-                                        <div class="qrcode">
-                                            <canvas height="196" width="196" aria-label="url" title="Билет" style="height: 196px; width: 196px;"></canvas>
-                                        </div>
-                                    </qrcode>
-                                </div>
                                 <div class="ticket__button">
                                     <app-button>
                                         <div class="for-button">
-                                            <button class="for-button__button">Скачать билет</button>
+                                            <button class="for-button__button" onclick="showToast('Ошибка')">Скачать билет</button>
                                         </div>
                                     </app-button>
                                 </div>
@@ -337,6 +363,20 @@
         // Обновляем время каждую минуту
         setInterval(updateTime, 60000);
     </script>
+    <div id="toast">Ошибка</div>
+    <script>
+// Функция для показа toast-уведомления
+function showToast(message) {
+    var toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+
+    // Скрыть toast через 3 секунды
+    setTimeout(function() {
+        toast.classList.remove('show');
+    }, 3000);
+}
+</script>
 </body>
 
 </html>

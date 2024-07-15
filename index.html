@@ -1,27 +1,339 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой сайт</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Уведомление об оплате</title>
+    <base href=".">
+    <link rel="icon" type="image/x-icon" href="https://qr.bilet.nspk.ru/favicon.ico">
     <style>
-        body {
-            background-color: #f5f1e8;
+        html, body {
+            height: auto;
+            min-height: 100%;
             margin: 0;
+            box-sizing: border-box;
+            background-color: #f5f1e8;
+            font-family: Circe, sans-serif;
         }
-        .header {
-            background-color: #1d1346;
-            color: white;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
+
+        @font-face {
+            font-family: Circe;
+            src: url(circe-bold-webfont.27529df664ce2f0e.woff2) format("woff2"),
+                url(circe-bold-webfont.a6d441f673662776.woff) format("woff");
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: Circe;
+            src: url(circe-regular-webfont.70e2ea4fb032224b.woff2) format("woff2"),
+                url(circe-regular-webfont.01fbe67cb561e424.woff) format("woff");
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        .logo {
+            text-align: center;
+            margin: 16px 0;
+        }
+
+        .content {
+            padding: 0 16px;
+        }
+
+        .ticket {
+            margin-top: 39px;
+        }
+
+        .ticket__qrcode {
+            margin: 31px 0;
+            text-align: center;
+        }
+
+        .ticket__button {
+            margin-bottom: 32px;
+        }
+
+        .trip-details {
+            margin-bottom: 35px;
+        }
+
+        .trip-details_margin-bottom_8 {
+            margin-bottom: 8px;
+        }
+
+        .display_block {
+            display: block;
+        }
+
+        .text-block {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .text-block_text-align_center {
+            text-align: center;
+        }
+
+        .text-block_margin-bottom_14 {
+            margin-bottom: 14px;
+        }
+
+        .trip-details p {
+            text-align: left; /* Выравнивание по левому краю для всех параграфов в блоке .trip-details */
+        }
+
+        /* Скрытие input и стилизация */
+        .input-hidden {
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        /* Стили для отображения числа без рамки */
+        .editable-number {
+            display: inline-block;
+            border-bottom: 1px dashed transparent; /* Линия подчеркивания, чтобы было видно, что можно кликнуть */
+        }
+
+        .editable-number:hover {
+            border-bottom-color: #000; /* Линия подчеркивания при наведении */
+            cursor: pointer;
         }
     </style>
+    <link rel="stylesheet" href="./Уведомление об оплате_files/styles.a697dd08801d8362.css" media="all">
 </head>
+
 <body>
-    <div class="header">Уведомление об оплате</div>
+    <noscript>
+        <div><img style="position:absolute; left:-9999px;" alt="" src="./Уведомление об оплате_files/95305900"></div>
+    </noscript>
+    <app-root ng-version="14.3.0">
+        <router-outlet></router-outlet>
+        <app-wrapper>
+            <div class="wrapper">
+                <app-header>
+                    <header>
+                        <h1>Уведомление об оплате</h1>
+                    </header>
+                </app-header>
+                <div class="logo">
+                    <img src="./Уведомление об оплате_files/logo.svg" alt="Система Быстрых Платежей">
+                </div>
+                <div class="content">
+                    <router-outlet></router-outlet>
+                    <app-result>
+                        <div class="text-block text-block_text-align_center">
+                            <p>Ваш проезд успешно оплачен!<br>Чтобы сохранить реквизиты билета, нажмите кнопку «Скачать билет»</p>
+                        </div>
+                        <app-ticket>
+                            <div class="ticket">
+                                <app-trip-details>
+                                    <div class="trip-details text-block" id="trip-details">
+                                        <p>Серия билета: <strong id="ticket-series">QR2001</strong></p>
+                                        <p>Номер билета: <strong id="ticket-number">20240715071131000</strong></p>
+                                        <p>Дата/время поездки: <strong id="ticket-date-time"></strong></p>
+                                        <p>Автобус: <strong class="editable-number" id="ticket-bus" onclick="editBus()">0</strong><input type="number" id="input-ticket-bus" class="input-hidden"></p>
+                                        <p>Т/С: <strong class="editable-number" id="ticket-tc" onclick="editTC()">0</strong><input type="text" id="input-ticket-tc" class="input-hidden"></p>
+                                        <p>Стоимость: <strong class="editable-number" id="ticket-price" onclick="editPrice()">32.00 руб.</strong><input type="text" id="input-ticket-price" class="input-hidden"></p>
+                                    </div>
+                                </app-trip-details>
+                                <div class="text-block text-block_text-align_center text-block_margin-bottom_14">
+                                    <p>С момента оплаты прошло:<br><strong id="time-since-payment">00:00:00</strong></p>
+                                </div>
+                                <div class="text-block text-block_text-align_center">
+                                    <p>QR-код билета для предъявления контролеру</p>
+                                </div>
+                                <div class="ticket__qrcode">
+                                    <qrcode errorcorrectionlevel="L" arialabel="url" colorlight="#F5F1E8" elementtype="canvas" title="Билет">
+                                        <div class="qrcode">
+                                            <canvas height="196" width="196" aria-label="url" title="Билет" style="height: 196px; width: 196px;"></canvas>
+                                        </div>
+                                    </qrcode>
+                                </div>
+                                <div class="ticket__button">
+                                    <app-button>
+                                        <div class="for-button">
+                                            <button class="for-button__button">Скачать билет</button>
+                                        </div>
+                                    </app-button>
+                                </div>
+                            </div>
+                        </app-ticket>
+                    </app-result>
+                </div>
+            </div>
+        </app-wrapper>
+    </app-root>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Функция для обновления времени каждую секунду
+            function updateTime() {
+                var now = new Date();
+                var options = {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    timeZone: 'Europe/Moscow'
+                };
+                var formattedDate = now.toLocaleDateString('ru-RU', options);
+                document.getElementById('ticket-date-time').textContent = formattedDate.replace(',', ''); // Убираем запятую из даты
+            }
+
+            // Функция для генерации случайного числа заданной длины
+            function generateRandomNumber(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            // Функция для обновления серии билета
+            function updateTicketSeries() {
+                var randomTwoDigit = generateRandomNumber(1, 79).toString().padStart(2, '0');
+                var randomThreeDigit = generateRandomNumber(11, 800).toString().padStart(3, '0');
+                var ticketSeries = 'QR2001' + randomTwoDigit + '000' + randomThreeDigit;
+                document.getElementById('ticket-series').textContent = ticketSeries;
+            }
+
+            // Функция для обновления номера билета
+            function updateTicketNumber() {
+                var now = new Date();
+                var year = now.getFullYear(); // Год полностью
+                var month = ('0' + (now.getMonth() + 1)).slice(-2); // Добавляем ведущий ноль, если месяц < 10
+                var day = ('0' + now.getDate()).slice(-2); // Добавляем ведущий ноль, если день < 10
+                var randomDigits = generateRandomNumber(100000, 999999); // Генерируем 6 случайных цифр
+                var ticketNumber = year + month + day + randomDigits + '000'; // Формируем номер билета
+                document.getElementById('ticket-number').textContent = ticketNumber;
+            }
+
+            // Запускаем обновление времени, серии билета и номера билета
+            updateTime();
+            updateTicketSeries();
+            updateTicketNumber();
+            setInterval(updateTime, 1000 * 60); // Каждую минуту обновляем время
+            setInterval(updateTicketSeries, 24 * 60 * 60 * 1000); // Каждые 24 часа обновляем серию билета
+            setInterval(updateTicketNumber, 24 * 60 * 60 * 1000); // Каждые 24 часа обновляем номер билета
+        });
+
+        // Функции для редактирования текстовых данных
+        function editBus() {
+            var busElement = document.getElementById('ticket-bus');
+            var inputElement = document.getElementById('input-ticket-bus');
+
+            // Показываем input и скрываем текст
+            inputElement.value = busElement.textContent;
+            busElement.style.display = 'none';
+            inputElement.style.display = 'inline-block';
+            inputElement.focus(); // Помещаем фокус в input
+        }
+
+        function editTC() {
+            var tcElement = document.getElementById('ticket-tc');
+            var inputElement = document.getElementById('input-ticket-tc');
+
+            // Показываем input и скрываем текст
+            inputElement.value = tcElement.textContent;
+            tcElement.style.display = 'none';
+            inputElement.style.display = 'inline-block';
+            inputElement.focus(); // Помещаем фокус в input
+        }
+
+        function editPrice() {
+            var priceElement = document.getElementById('ticket-price');
+            var inputElement = document.getElementById('input-ticket-price');
+
+            // Показываем input и скрываем текст
+            inputElement.value = priceElement.textContent.replace(' руб.', '');
+            priceElement.style.display = 'none';
+            inputElement.style.display = 'inline-block';
+            inputElement.focus(); // Помещаем фокус в input
+        };
+
+        // Обработчики для сохранения изменений при потере фокуса или нажатии Enter
+        document.getElementById('input-ticket-bus').addEventListener('blur', function() {
+            var busElement = document.getElementById('ticket-bus');
+            var inputElement = document.getElementById('input-ticket-bus');
+            var newValue = inputElement.value.trim();
+
+            // Проверяем, что введено число и оно не пустое
+            if (!isNaN(newValue) && newValue !== '') {
+                busElement.textContent = newValue;
+            }
+
+            // Скрываем input и показываем текст
+            inputElement.style.display = 'none';
+            busElement.style.display = 'inline-block';
+        });
+
+        document.getElementById('input-ticket-tc').addEventListener('blur', function() {
+            var tcElement = document.getElementById('ticket-tc');
+            var inputElement = document.getElementById('input-ticket-tc');
+            var newValue = inputElement.value.trim();
+
+            // Проверяем, что введено не пустое значение
+            if (newValue !== '') {
+                tcElement.textContent = newValue;
+            }
+
+            // Скрываем input и показываем текст
+            inputElement.style.display = 'none';
+            tcElement.style.display = 'inline-block';
+        });
+
+        document.getElementById('input-ticket-price').addEventListener('blur', function() {
+            var priceElement = document.getElementById('ticket-price');
+            var inputElement = document.getElementById('input-ticket-price');
+            var newValue = inputElement.value.trim();
+
+            // Проверяем, что введено число и оно не пустое
+            if (!isNaN(newValue) && newValue !== '') {
+                // Добавляем .00 если нет десятичных знаков
+                if (!newValue.includes('.')) {
+                    newValue += '.00';
+                }
+                priceElement.textContent = newValue + ' руб.';
+            }
+
+            // Скрываем input и показываем текст
+            inputElement.style.display = 'none';
+            priceElement.style.display = 'inline-block';
+        });
+
+        // Запускаем секундомер
+        var timerElement = document.getElementById('time-since-payment');
+        var seconds = 0;
+
+        function updateTimer() {
+            var hours = Math.floor(seconds / 3600);
+            var minutes = Math.floor((seconds % 3600) / 60);
+            var remainingSeconds = seconds % 60;
+
+            // Форматируем время в формат ЧЧ:ММ:СС
+            var formattedTime = pad(hours) + ':' + pad(minutes) + ':' + pad(remainingSeconds);
+            timerElement.textContent = formattedTime;
+
+            // Увеличиваем количество прошедших секунд
+            seconds++;
+        }
+
+        // Функция для добавления ведущего нуля к числу, если оно меньше 10
+        function pad(val) {
+            var valString = val + '';
+            if (valString.length < 2) {
+                return '0' + valString;
+            } else {
+                return valString;
+            }
+        }
+
+        // Запускаем секундомер каждую секунду
+        setInterval(updateTimer, 1000);
+
+        // Обновляем время каждую минуту
+        setInterval(updateTime, 60000);
+    </script>
 </body>
+
 </html>

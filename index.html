@@ -410,13 +410,25 @@ function showToast(message) {
 </script>
 <script>
     function playVideo() {
-        var videoContainer = document.getElementById('videoContainer');
-        var video = document.getElementById('payment-notification-video');
-        
-        // Показываем контейнер и видео
-        videoContainer.style.display = 'block';
-        video.play();
-    }
+    var videoContainer = document.getElementById('videoContainer');
+    var video = document.getElementById('payment-notification-video');
+    
+    // Добавляем класс для полноэкранного режима
+    videoContainer.classList.add('fullscreen');
+    
+    // Показываем контейнер и видео
+    videoContainer.style.display = 'flex'; // Используем flex для выравнивания по центру
+    video.play();
+
+    // Выход из полноэкранного режима при клике на экран (если нужно)
+    videoContainer.addEventListener('click', function() {
+        if (videoContainer.classList.contains('fullscreen')) {
+            video.pause(); // Приостанавливаем видео
+            videoContainer.classList.remove('fullscreen'); // Удаляем класс полноэкранного режима
+            videoContainer.style.display = 'none'; // Скрываем контейнер
+        }
+    });
+}
 </script>
 </body>
 

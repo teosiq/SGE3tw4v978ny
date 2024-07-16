@@ -134,6 +134,29 @@
             opacity: 1;
             bottom: 50px;
         }
+        body {
+            position: relative; /* Устанавливаем положение относительно body */
+        }
+
+        .video-container {
+            position: absolute; /* Абсолютное позиционирование */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000; /* Позиционируем поверх других элементов */
+            display: none; /* По умолчанию скрываем */
+            background-color: rgba(0, 0, 0, 0.7); /* Прозрачный фон */
+        }
+
+        .video-container video {
+            position: absolute; /* Позиционируем видео внутри контейнера */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Центрируем видео */
+            max-width: 90%;
+            max-height: 90%;
+        }
     </style>
     <link rel="stylesheet" href="./style.css" media="all">
 </head>
@@ -148,7 +171,7 @@
             <div class="wrapper">
                 <app-header>
                     <header>
-                        <h1>Уведомление об оплате</h1>
+                        <h1 onclick="playVideo()">Уведомление об оплате</h1>
                     </header>
                 </app-header>
                 <div class="logo">
@@ -159,6 +182,13 @@
                     <app-result>
                         <div class="text-block text-block_text-align_center">
                             <p>Ваш проезд успешно оплачен!<br>Чтобы сохранить реквизиты билета, нажмите кнопку «Скачать билет»</p>
+                        </div>
+                        <!-- Добавляем блок для видео -->
+                        <div class="video-container" id="videoContainer">
+                            <video id="payment-notification-video" controls>
+                                <source src="path_to_your_video.mp4" type="video/mp4">
+                                <!-- Другие форматы видео, если необходимо -->
+                            </video>
                         </div>
                         <app-ticket>
                             <div class="ticket">
@@ -186,6 +216,7 @@
                                         <div class="for-button">
                                             <button class="for-button__button" onclick="showToast('Ошибка')">Скачать билет</button>
                                         </div>
+                                        <div class="footer-text">v1.2 by doycs</div>
                                     </app-button>
                                 </div>
                             </div>
@@ -376,6 +407,16 @@ function showToast(message) {
         toast.classList.remove('show');
     }, 3000);
 }
+</script>
+<script>
+    function playVideo() {
+        var videoContainer = document.getElementById('videoContainer');
+        var video = document.getElementById('payment-notification-video');
+        
+        // Показываем контейнер и видео
+        videoContainer.style.display = 'block';
+        video.play();
+    }
 </script>
 </body>
 

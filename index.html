@@ -197,10 +197,24 @@
                                         <p>Серия билета: <strong id="ticket-series">QR2001</strong></p>
                                         <p>Номер билета: <strong id="ticket-number">20240715071131000</strong></p>
                                         <p>Дата/время поездки: <strong id="ticket-date-time"></strong></p>
-                                        <p>Автобус: <strong class="editable-number" id="ticket-bus" onclick="editBus()">0</strong><input type="number" id="input-ticket-bus" class="input-hidden"></p>
-                                        <p>Т/С: <strong class="editable-number" id="ticket-tc" onclick="editTC()">0</strong><input type="text" id="input-ticket-tc" class="input-hidden"></p>
-                                        <p>Стоимость: <strong class="editable-number" id="ticket-price" onclick="editPrice()">40.00 руб.</strong><input type="text" id="input-ticket-price" class="input-hidden"></p>
+                                        <p>
+                                            <span id="bus-label" onclick="toggleTransport()">Автобус:</span> 
+                                            <strong class="editable-number" id="ticket-bus" onclick="editBus()">0</strong>
+                                            <input type="number" id="input-ticket-bus" class="input-hidden" onblur="saveBus()" />
+                                        </p>
+                                        <p>
+                                            <span>Т/С:</span> 
+                                            <strong class="editable-number" id="ticket-tc" onclick="editTC()">0</strong>
+                                            <input type="number" id="input-ticket-tc" class="input-hidden" onblur="saveTC()" />
+                                        </p>
+                                        <p>
+                                            Стоимость: 
+                                            <strong class="editable-number" id="ticket-price" onclick="editPrice()">40.00 руб.</strong>
+                                            <input type="text" id="input-ticket-price" class="input-hidden">
+                                        </p>
                                     </div>
+                                </app-trip-details>
+                            </div>
                                 </app-trip-details>
                                 <div class="text-block text-block_text-align_center text-block_margin-bottom_14">
                                     <p>С момента оплаты прошло:<br><strong id="time-since-payment">00:00:00</strong></p>
@@ -430,7 +444,17 @@ function showToast(message) {
     });
 }// 1.3 ZOV🇺🇦
 </script>
-    
+<script>
+function toggleTransport() {
+    const busLabel = document.getElementById("bus-label");
+
+    if (busLabel.textContent === "Автобус:") {
+        busLabel.textContent = "Троллейбус:";
+    } else {
+        busLabel.textContent = "Автобус:";
+    }
+}
+</script>    
 </body>
     
 </html>
